@@ -44,7 +44,8 @@ void printHelp() {
 }
 
 int parseFlags(int argc, char **argv, int *displaySrcID, int *displayDstID, int *frameRate) {
-	for(int ix = 1; ix < argc; ix++) {
+	int ix = 1;
+	for(; ix < argc; ix++) {
 		if(argv[ix][0] != '-')
 			continue; // Maybe we should return an error here.
 
@@ -82,7 +83,7 @@ int main(int argc, char **argv) {
 	int displaySrcID = 0;
 	int displayDstID = 4;
 	int frameRate    = 25;
-	if(parseFlags(argc, argv, displaySrcID, displayDstID, frameRate) < 0)
+	if(parseFlags(argc, argv, &displaySrcID, &displayDstID, &frameRate) < 0)
 		return -1;
 
 	DISPMANX_DISPLAY_HANDLE_T   displaySrc;
