@@ -37,38 +37,49 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 void printHelp() {
-	printf("Usage: ./gertCloner -displaySrc <value> -displayDST <value> -frameRate <value>\n");
-	printf("\tdisplaySrc: corresponds to the id of the source display\n");
-	printf("\tdisplayDst: corresponds to the id of the destination display\n");
-	printf("\tframeRate: frame per seconds for the display\n");
+	printf("Usage: ./gertCloner -displaySrc <value> -displayDst <value> -framePeriod <value>\n");
+	printf("\tdisplaySrc: corresponds to the id of the source display (Default: 0)\n");
+	printf("\tdisplayDst: corresponds to the id of the destination display (Default: 4)\n");
+	printf("\tframePeriod: delay between frames in milliseconds (Default: 25)\n");
 }
 
-int parseFlags(int argc, char **argv, int *displaySrcID, int *displayDstID, int *frameRate) {
+int parseFlags(int argc, char **argv, int *displaySrcID, int *displayDstID, int *framePeriod) {
 	int ix = 1;
 	for(; ix < argc; ix++) {
 		if(argv[ix][0] != '-')
 			continue; // Maybe we should return an error here.
 
-		if(strcmp(argv[ix]+1, "displaySrc") == 0) {
+		if(!strcmp(argv[ix]+1, "displaySrc")) {
 			*displaySrcID = atoi(argv[++ix]);
 			continue;
 		}
-		if(strcmp(argv[ix]+1, "displayDst") == 0) {
+		if(!strcmp(argv[ix]+1, "displayDst")) {
 			*displayDstID = atoi(argv[++ix]);
 			continue;
 		}
-		if(strcmp(argv[ix]+1, "frameRate") == 0) {
-			*frameRate = atoi(argv[++ix]);
+		if(!strcmp(argv[ix]+1, "framePeriod")) {
+			*framePeriod = atoi(argv[++ix]);
 			continue;
 		}
 
-		if(strcmp(argv[ix]+1, "help") == 0 || argv[ix][1] == 'h') {
+		if(!strcmp(argv[ix]+1, "help") || argv[ix][1] == 'h') {
 			printHelp();
 			return -1;
 		}
 		printf("Error: %s is not recognized as a valid flag string.\n", argv[ix]);
 		printHelp();
 		return -2;
+	}
+
+	if(displaySrcID == displayDstID || framePeriod < 1) {
+		printf("Displays can't have the same id:\n");
+		printf("\tdisplaySrcID: %i", displaySrcID);
+		printf("\tdisplayDstID: %i", displayDstID);
+		return -3;
+	}
+	if(framePeriod < 1) {
+		printf("Frame period can't have a value lower than one. (current: %i)\n", framePeriod);
+		return -4;
 	}
 
 	return 0;
@@ -82,8 +93,8 @@ void loopHandler(int sig) {
 int main(int argc, char **argv) {
 	int displaySrcID = 0;
 	int displayDstID = 4;
-	int frameRate    = 25;
-	if(parseFlags(argc, argv, &displaySrcID, &displayDstID, &frameRate) < 0)
+	int framePeriod  = 25;
+	if(!parseFlags(argc, argv, &displaySrcID, &displayDstID, &framePeriod))
 		return -1;
 
 	DISPMANX_DISPLAY_HANDLE_T   displaySrc;
@@ -144,7 +155,7 @@ int main(int argc, char **argv) {
 	signal(SIGINT, loopHandler);
 	while(LOOPER) {
 		vc_dispmanx_snapshot( displaySrc, resource, 0 );
-		usleep(frameRate * 1000);
+		usleep(framePeriod * 1000);
 	}
 
 	printf("Quitting...\n");
