@@ -43,3 +43,6 @@ as documentation on the GPU API is... incomplete.
 ## Contribute
 
 Being honest, my C skillz are non-existant so please please send any changes you would like to publish.
+Also, an idea that might work is to configure the framebuffer to be as big as the two screens together,
+fiddle a bit with the configuration of this program to copy only the second screen portion and then
+we should be able to get the independent dual screen setup! (I think)
