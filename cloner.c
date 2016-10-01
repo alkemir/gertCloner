@@ -40,7 +40,7 @@ void printHelp() {
 	printf("Usage: ./gertCloner -displaySrc <value> -displayDst <value> -framePeriod <value>\n");
 	printf("\tdisplaySrc: corresponds to the id of the source display (Default: 0)\n");
 	printf("\tdisplayDst: corresponds to the id of the destination display (Default: 4)\n");
-	printf("\tframePeriod: delay between frames in milliseconds (Default: 25)\n");
+	printf("\tframePeriod: delay between frames in milliseconds (Default: 15)\n");
 }
 
 int parseFlags(int argc, char **argv, int *displaySrcID, int *displayDstID, int *framePeriod) {
@@ -71,14 +71,15 @@ int parseFlags(int argc, char **argv, int *displaySrcID, int *displayDstID, int 
 		return -2;
 	}
 
-	if(displaySrcID == displayDstID || framePeriod < 1) {
+	if(displaySrcID == displayDstID) {
 		printf("Displays can't have the same id:\n");
-		printf("\tdisplaySrcID: %i", displaySrcID);
-		printf("\tdisplayDstID: %i", displayDstID);
+		printf("\tdisplaySrc: %i", *displaySrcID);
+		printf("\tdisplayDst: %i", *displayDstID);
 		return -3;
 	}
-	if(framePeriod < 1) {
-		printf("Frame period can't have a value lower than one. (current: %i)\n", framePeriod);
+
+	if(*framePeriod < 1) {
+		printf("Frame period can't have a value lower than one. (current: %i)\n", *framePeriod);
 		return -4;
 	}
 
@@ -93,8 +94,8 @@ void loopHandler(int sig) {
 int main(int argc, char **argv) {
 	int displaySrcID = 0;
 	int displayDstID = 4;
-	int framePeriod  = 25;
-	if(!parseFlags(argc, argv, &displaySrcID, &displayDstID, &framePeriod))
+	int framePeriod  = 15;
+	if(parseFlags(argc, argv, &displaySrcID, &displayDstID, &framePeriod))
 		return -1;
 
 	DISPMANX_DISPLAY_HANDLE_T   displaySrc;
