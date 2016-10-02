@@ -30,8 +30,10 @@ To get this program on your system just download this repository and ```make```,
 and you should get the same image on both screens.
 
 ## Command line options
-Currently no command line options are supported, but display selection and copy framerate would be
-nice.
+* `-help | -h:` Displays help and flag information.
+* `-displaySrc:` ID of the source display. (Default: 0)
+* `-displayDst:` ID of the destination display. (Default: 4)
+* `-framePeriod:` Delay between frames in milliseconds. (Default: 25)
 
 ## How it works
 
